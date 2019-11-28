@@ -1,7 +1,6 @@
 package ch.zuehlke.bcs.zipper;
 
-import ch.zuehlke.bcs.list.FunctionalList;
-import ch.zuehlke.bcs.list.FunctionalLists;
+import io.vavr.collection.Stream;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,9 +19,9 @@ public class PlaneZippers {
                 .collect(Collectors.toList());
 
         ListZipper<T> fillLine = ListZippers.repeat(fillValue);
-        FunctionalList<ListZipper<T>> leftReverse = FunctionalLists.repeat(fillLine);
+        Stream<ListZipper<T>> leftReverse = Stream.continually(fillLine);
         ListZipper<T> cursor =  fillLine;
-        FunctionalList<ListZipper<T>> right = FunctionalLists.repeat(fillLine).prepend(valueLines);
+        Stream<ListZipper<T>> right = Stream.continually(fillLine).prependAll(valueLines);
 
         ListZipper<ListZipper<T>> data = new ListZipper<>(leftReverse, cursor, right);
         return new PlaneZipper<>(data);

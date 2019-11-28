@@ -1,37 +1,34 @@
 package ch.zuehlke.bcs.zipper;
 
-import ch.zuehlke.bcs.list.FunctionalList;
+import io.vavr.collection.Stream;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-import static ch.zuehlke.bcs.list.FunctionalLists.iterate;
-
 public class ListZipper<T> {
 
-    private final FunctionalList<T> leftReverse;
+    private final Stream<T> leftReverse;
     private final T cursor;
-    private final FunctionalList<T> right;
+    private final Stream<T> right;
 
-    ListZipper(FunctionalList<T> leftReverse, T cursor, FunctionalList<T> right) {
+    ListZipper(Stream<T> leftReverse, T cursor, Stream<T> right) {
         this.leftReverse = leftReverse;
         this.cursor = cursor;
         this.right = right;
     }
 
     ListZipper<T> listLeft() {
-        FunctionalList<T> newLeftReverse = leftReverse.tail();
+        Stream<T> newLeftReverse = leftReverse.tail();
         T newCursor = leftReverse.head();
-        FunctionalList<T> newRight = right.prepend(cursor);
+        Stream<T> newRight = right.prepend(cursor);
         return new ListZipper<>(newLeftReverse, newCursor, newRight);
     }
 
     ListZipper<T> listRight() {
-        FunctionalList<T> newLeftReverse = leftReverse.prepend(cursor);
+        Stream<T> newLeftReverse = leftReverse.prepend(cursor);
         T newCursor = right.head();
-        FunctionalList<T> newRight = right.tail();
+        Stream<T> newRight = right.tail();
         return new ListZipper<>(newLeftReverse, newCursor, newRight);
     }
 
@@ -44,17 +41,16 @@ public class ListZipper<T> {
     }
 
     public List<T> toList(int number) {
-        List<T> list = new ArrayList<>(leftReverse.take(number));
-        Collections.reverse(list);
+        List<T> list = new ArrayList<>(leftReverse.take(number).reverse().toJavaList());
         list.add(cursor);
-        list.addAll(right.take(number));
+        list.addAll(right.take(number).toJavaList());
         return list;
     }
 
     public <S> ListZipper<S> fmap(Function<T, S> f) {
-        FunctionalList<S> newLeftReverse = leftReverse.fmap(f);
+        Stream<S> newLeftReverse = leftReverse.map(f);
         S newCursor = f.apply(cursor);
-        FunctionalList<S> newRight = right.fmap(f);
+        Stream<S> newRight = right.map(f);
         return new ListZipper<>(newLeftReverse, newCursor, newRight);
     }
 
@@ -67,9 +63,9 @@ public class ListZipper<T> {
     }
 
     private ListZipper<ListZipper<T>> genericMove(Function<ListZipper<T>, ListZipper<T>> f, Function<ListZipper<T>, ListZipper<T>> g) {
-        FunctionalList<ListZipper<T>> newLeftReverse = iterate(f, this).tail();
+        Stream<ListZipper<T>> newLeftReverse =Stream.iterate(this, f).tail();
         ListZipper<T> newCursor = this;
-        FunctionalList<ListZipper<T>> newRight = iterate(g, this).tail();
+        Stream<ListZipper<T>> newRight = Stream.iterate(this, g).tail();
         return new ListZipper<>(newLeftReverse, newCursor, newRight);
     }
 

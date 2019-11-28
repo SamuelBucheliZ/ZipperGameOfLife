@@ -12,8 +12,8 @@ import static ch.zuehlke.bcs.game.CellState.DEAD;
 
 public class App {
 
-    private static final int NUMBER_OF_ITERATIONS = 3;
-    private static final int DISPLAY_SIZE = 6;
+    private static final int NUMBER_OF_ITERATIONS = 10;
+    private static final int DISPLAY_SIZE = 10;
 
     public static void main(String... args) {
         GameOfLife gameOfLife = GameOfLife.from(glider());

@@ -1,7 +1,6 @@
 package ch.zuehlke.bcs.zipper;
 
-import ch.zuehlke.bcs.list.FunctionalList;
-import ch.zuehlke.bcs.list.FunctionalLists;
+import io.vavr.collection.Stream;
 
 import java.util.List;
 
@@ -12,13 +11,13 @@ class ListZippers {
     }
 
     static <T> ListZipper<T> repeat(T value) {
-        return new ListZipper<>(FunctionalLists.repeat(value), value, FunctionalLists.repeat(value));
+        return new ListZipper<>(Stream.continually(value), value, Stream.continually(value));
     }
 
     static <T> ListZipper<T> from(T leftRepeat, List<T> list, T rightRepeat) {
-        FunctionalList<T> leftReverse = FunctionalLists.repeat(leftRepeat);
+        Stream<T> leftReverse = Stream.continually(leftRepeat);
         T cursor = leftRepeat;
-        FunctionalList<T> right = FunctionalLists.repeat(rightRepeat).prepend(list);
+        Stream<T> right = Stream.continually(rightRepeat).prependAll(list);
         return new ListZipper<>(leftReverse, cursor, right);
     }
 }

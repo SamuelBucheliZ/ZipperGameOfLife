@@ -1,10 +1,8 @@
 package ch.zuehlke.bcs.zipper;
 
-import ch.zuehlke.bcs.list.FunctionalList;
+import io.vavr.collection.Stream;
 
 import java.util.function.Function;
-
-import static ch.zuehlke.bcs.list.FunctionalLists.iterate;
 
 
 public class PlaneZipper<T> {
@@ -71,9 +69,9 @@ public class PlaneZipper<T> {
     private ListZipper<PlaneZipper<T>> genericMove(
             Function<PlaneZipper<T>, PlaneZipper<T>> f,
             Function<PlaneZipper<T>, PlaneZipper<T>> g) {
-        FunctionalList<PlaneZipper<T>> left = iterate(applyInternally(f), data).fmap(PlaneZipper::new);
+        Stream<PlaneZipper<T>> left = Stream.iterate(data, applyInternally(f)).map(PlaneZipper::new);
         PlaneZipper<T> cursor = this;
-        FunctionalList<PlaneZipper<T>> right = iterate(applyInternally(g), data).fmap(PlaneZipper::new);
+        Stream<PlaneZipper<T>> right = Stream.iterate(data, applyInternally(g)).map(PlaneZipper::new);
         return new ListZipper<>(left, cursor, right);
     }
 
