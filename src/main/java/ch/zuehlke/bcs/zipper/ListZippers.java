@@ -1,8 +1,7 @@
 package ch.zuehlke.bcs.zipper;
 
+import io.vavr.collection.List;
 import io.vavr.collection.Stream;
-
-import java.util.List;
 
 class ListZippers {
 
@@ -17,7 +16,7 @@ class ListZippers {
     static <T> ListZipper<T> from(T leftRepeat, List<T> list, T rightRepeat) {
         Stream<T> leftReverse = Stream.continually(leftRepeat);
         T cursor = leftRepeat;
-        Stream<T> right = Stream.continually(rightRepeat).prependAll(list);
+        Stream<T> right = Stream.ofAll(list).extend(rightRepeat);// Stream.continually(rightRepeat).prependAll(list);
         return new ListZipper<>(leftReverse, cursor, right);
     }
 }

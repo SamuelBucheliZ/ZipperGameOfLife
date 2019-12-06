@@ -2,10 +2,9 @@ package ch.zuehlke.bcs;
 
 import ch.zuehlke.bcs.game.CellState;
 import ch.zuehlke.bcs.game.GameOfLife;
+import io.vavr.collection.List;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 import static ch.zuehlke.bcs.game.CellState.ALIVE;
 import static ch.zuehlke.bcs.game.CellState.DEAD;
@@ -32,10 +31,10 @@ public class App {
     }
 
     private static List<List<CellState>> glider()  {
-        return Arrays.asList(
-                        Arrays.asList(DEAD, ALIVE, DEAD),
-                        Arrays.asList(DEAD, DEAD, ALIVE),
-                        Arrays.asList(ALIVE, ALIVE, ALIVE)
+        return List.of(
+                        List.of(DEAD, ALIVE, DEAD),
+                        List.of(DEAD, DEAD, ALIVE),
+                        List.of(ALIVE, ALIVE, ALIVE)
                 );
     }
 

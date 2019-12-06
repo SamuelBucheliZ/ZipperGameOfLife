@@ -11,8 +11,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+        <maven.compiler.plugin.release>11</maven.compiler.plugin.release>
 
         <vavr.version>0.9.3</vavr.version>
 
@@ -54,6 +53,23 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>${maven.compiler.plugin.release}</release>
+                </configuration>
+            </plugin>
+
             <!-- JUnit 5 requires Surefire version 2.22.1 or higher -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>

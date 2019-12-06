@@ -1,11 +1,8 @@
 package ch.zuehlke.bcs.zipper;
 
+import io.vavr.Function1;
+import io.vavr.collection.List;
 import io.vavr.collection.Stream;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class PlaneZippers {
 
@@ -14,22 +11,21 @@ public class PlaneZippers {
     }
 
     public static <T> PlaneZipper<T> from(List<List<T>> values, T fillValue) {
-        List<ListZipper<T>> valueLines = values.stream()
-                .map(v -> ListZippers.from(fillValue, v, fillValue))
-                .collect(Collectors.toList());
+        List<ListZipper<T>> valueLines = values
+                .map(v -> ListZippers.from(fillValue, v, fillValue));
 
         ListZipper<T> fillLine = ListZippers.repeat(fillValue);
         Stream<ListZipper<T>> leftReverse = Stream.continually(fillLine);
         ListZipper<T> cursor =  fillLine;
-        Stream<ListZipper<T>> right = Stream.continually(fillLine).prependAll(valueLines);
+        Stream<ListZipper<T>> right = Stream.ofAll(valueLines).extend(fillLine);
 
         ListZipper<ListZipper<T>> data = new ListZipper<>(leftReverse, cursor, right);
         return new PlaneZipper<>(data);
 
     }
 
-    public static <T> List<Function<PlaneZipper<T>, PlaneZipper<T>>> neighbors() {
-        return Arrays.asList(
+    public static <T> List<Function1<PlaneZipper<T>, PlaneZipper<T>>> neighbors() {
+        return List.of(
                 PlaneZipper::left, PlaneZipper::right, // horizontal
                 PlaneZipper::up, PlaneZipper::down, // vertical
                 compose(PlaneZipper::left, PlaneZipper::up), // the diagonals
@@ -39,7 +35,7 @@ public class PlaneZippers {
         );
     }
 
-    private static <R, S, T> Function<R, T> compose(Function<R, S> f, Function<S, T> g) {
+    private static <R, S, T> Function1<R, T> compose(Function1<R, S> f, Function1<S, T> g) {
         return f.andThen(g);
     }
 }

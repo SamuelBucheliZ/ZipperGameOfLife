@@ -1,10 +1,9 @@
 package ch.zuehlke.bcs.zipper;
 
 
+import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 
-
-import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -22,7 +21,7 @@ class ListZippersTest {
 
     @Test
     void from() {
-        ListZipper<Integer> from = ListZippers.from(1, Arrays.asList(2, 3), 4);
+        ListZipper<Integer> from = ListZippers.from(1, List.of(2, 3), 4);
 
         assertThat(from.read(), is(1));
 
@@ -37,7 +36,7 @@ class ListZippersTest {
 
     @Test
     void duplicate() {
-        ListZipper<Integer> from = ListZippers.from(1, Arrays.asList(2, 3), 4);
+        ListZipper<Integer> from = ListZippers.from(1, List.of(2, 3), 4);
 
         assertThat(from.duplicate().listRight().read().read(), is(from.listRight().read()));
         assertThat(from.duplicate().listLeft().read().read(), is(from.listLeft().read()));

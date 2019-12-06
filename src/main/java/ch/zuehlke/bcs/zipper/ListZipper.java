@@ -1,10 +1,9 @@
 package ch.zuehlke.bcs.zipper;
 
+import io.vavr.Function1;
+import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 public class ListZipper<T> {
 
@@ -41,13 +40,16 @@ public class ListZipper<T> {
     }
 
     public List<T> toList(int number) {
-        List<T> list = new ArrayList<>(leftReverse.take(number).reverse().toJavaList());
-        list.add(cursor);
-        list.addAll(right.take(number).toJavaList());
-        return list;
+        return Stream.of(
+                leftReverse.take(number).reverse().toStream(),
+                Stream.of(cursor),
+                right.take(number)
+        )
+                .flatMap(x -> x)
+                .toList();
     }
 
-    public <S> ListZipper<S> fmap(Function<T, S> f) {
+    public <S> ListZipper<S> fmap(Function1<T, S> f) {
         Stream<S> newLeftReverse = leftReverse.map(f);
         S newCursor = f.apply(cursor);
         Stream<S> newRight = right.map(f);
@@ -58,12 +60,12 @@ public class ListZipper<T> {
         return genericMove(ListZipper::listLeft, ListZipper::listRight);
     }
 
-    <S> ListZipper<S> extend(Function<ListZipper<T>, S> f) {
+    <S> ListZipper<S> extend(Function1<ListZipper<T>, S> f) {
         return duplicate().fmap(f);
     }
 
-    private ListZipper<ListZipper<T>> genericMove(Function<ListZipper<T>, ListZipper<T>> f, Function<ListZipper<T>, ListZipper<T>> g) {
-        Stream<ListZipper<T>> newLeftReverse =Stream.iterate(this, f).tail();
+    private ListZipper<ListZipper<T>> genericMove(Function1<ListZipper<T>, ListZipper<T>> f, Function1<ListZipper<T>, ListZipper<T>> g) {
+        Stream<ListZipper<T>> newLeftReverse = Stream.iterate(this, f).tail();
         ListZipper<T> newCursor = this;
         Stream<ListZipper<T>> newRight = Stream.iterate(this, g).tail();
         return new ListZipper<>(newLeftReverse, newCursor, newRight);

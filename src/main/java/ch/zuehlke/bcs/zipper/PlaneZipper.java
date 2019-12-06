@@ -1,8 +1,7 @@
 package ch.zuehlke.bcs.zipper;
 
+import io.vavr.Function1;
 import io.vavr.collection.Stream;
-
-import java.util.function.Function;
 
 
 public class PlaneZipper<T> {
@@ -47,12 +46,12 @@ public class PlaneZipper<T> {
         return new PlaneZipper<>(data.write(newLine));
     }
 
-    private <S> PlaneZipper<S> fmap(Function<T, S> f) {
+    private <S> PlaneZipper<S> fmap(Function1<T, S> f) {
         ListZipper<ListZipper<S>> mapped = data.fmap(l -> l.fmap(f));
         return new PlaneZipper<>(mapped);
     }
 
-    public <S> ListZipper<S> mapLine(Function<ListZipper<T>, S> f) {
+    public <S> ListZipper<S> mapLine(Function1<ListZipper<T>, S> f) {
         return data.fmap(f);
     }
 
@@ -62,20 +61,20 @@ public class PlaneZipper<T> {
         return new PlaneZipper<>(horizontalMapped);
     }
 
-    public <S> PlaneZipper<S> extend(Function<PlaneZipper<T>, S> f) {
+    public <S> PlaneZipper<S> extend(Function1<PlaneZipper<T>, S> f) {
         return duplicate().fmap(f);
     }
 
     private ListZipper<PlaneZipper<T>> genericMove(
-            Function<PlaneZipper<T>, PlaneZipper<T>> f,
-            Function<PlaneZipper<T>, PlaneZipper<T>> g) {
+            Function1<PlaneZipper<T>, PlaneZipper<T>> f,
+            Function1<PlaneZipper<T>, PlaneZipper<T>> g) {
         Stream<PlaneZipper<T>> left = Stream.iterate(data, applyInternally(f)).map(PlaneZipper::new);
         PlaneZipper<T> cursor = this;
         Stream<PlaneZipper<T>> right = Stream.iterate(data, applyInternally(g)).map(PlaneZipper::new);
         return new ListZipper<>(left, cursor, right);
     }
 
-    private static <T> Function<ListZipper<ListZipper<T>>, ListZipper<ListZipper<T>>> applyInternally(Function<PlaneZipper<T>, PlaneZipper<T>> f) {
+    private static <T> Function1<ListZipper<ListZipper<T>>, ListZipper<ListZipper<T>>> applyInternally(Function1<PlaneZipper<T>, PlaneZipper<T>> f) {
         return l -> f.apply(new PlaneZipper<>(l)).data;
     }
 }

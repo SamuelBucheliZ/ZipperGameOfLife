@@ -3,9 +3,7 @@ package ch.zuehlke.bcs.game;
 import ch.zuehlke.bcs.zipper.ListZipper;
 import ch.zuehlke.bcs.zipper.PlaneZipper;
 import ch.zuehlke.bcs.zipper.PlaneZippers;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import io.vavr.collection.List;
 
 public class GameOfLife {
 
@@ -36,10 +34,9 @@ public class GameOfLife {
     }
 
     private static int aliveNeighbors(PlaneZipper<CellState> z) {
-        return (int) PlaneZippers.<CellState>neighbors().stream()
+        return PlaneZippers.<CellState>neighbors()
                 .map(dir -> dir.apply(z))
-                .filter(GameOfLife::isAlive)
-                .count();
+                .count(GameOfLife::isAlive);
     }
 
     private static boolean isAlive(PlaneZipper<CellState> neighbor) {
@@ -47,11 +44,11 @@ public class GameOfLife {
     }
 
     public String display(int size) {
-        return cells.mapLine(l -> displayLine(l, size)).toList(size).stream().collect(Collectors.joining("\n"));
+        return String.join("\n", cells.mapLine(l -> displayLine(l, size)).toList(size));
     }
 
     private static String displayLine(ListZipper<CellState> l, int size) {
-        return l.fmap(CellState::getSymbol).toList(size).stream().collect(Collectors.joining());
+        return String.join("", l.fmap(CellState::getSymbol).toList(size));
     }
 
 
